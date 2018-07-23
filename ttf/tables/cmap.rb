@@ -49,6 +49,19 @@ module Emoji
             end
           end
         end
+
+        # Given numGlyphs, fill in an index of glyph ID to (unicode) charCode
+        def map(numGlyphs)
+          mapping = [*0...numGlyphs].map { 0 }
+
+          @tables.each do |table|
+            table.groups.each do |group|
+              mapping[group.startGlyphCode, group.length] = [*group.startCharCode..group.endCharCode]
+            end
+          end
+
+          return mapping
+        end
       end
 
       # Processes format 12 (segemented coverage) subtables
