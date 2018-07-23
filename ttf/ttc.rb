@@ -30,7 +30,8 @@ module Emoji
         majorVersion, minorVersion, numFonts = @bytes[4, 8].unpack('nnN')
         offsetTable = @bytes[12, (4 * numFonts)].unpack('N' * numFonts)
 
-        @fonts = offsetTable.map do |offset|
+        # TODO: remove 1-font debug limit
+        @fonts = offsetTable[0, 1].map do |offset|
           TTF.new(@bytes[offset, @bytes.length], offset)
         end
       end

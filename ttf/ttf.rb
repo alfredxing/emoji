@@ -1,5 +1,6 @@
-require_relative 'tables/name'
+require_relative 'tables/cmap'
 require_relative 'tables/maxp'
+require_relative 'tables/name'
 require_relative 'tables/sbix'
 
 module Emoji
@@ -53,10 +54,12 @@ module Emoji
           raw = @bytes[offset - @fontOffset, length]
 
           case tag
-          when 'name'
-            @tables[tag] = Tables::NAME.new(raw)
+          when 'cmap'
+            @tables[tag] = Tables::CMAP.new(raw)
           when 'maxp'
             @tables[tag] = Tables::MAXP.new(raw)
+          when 'name'
+            @tables[tag] = Tables::NAME.new(raw)
           when 'sbix'
             @tables[tag] = Tables::SBIX.new(raw, @tables['maxp'].numGlyphs)
           else
