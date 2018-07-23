@@ -64,7 +64,7 @@ module Emoji
               :ppem => ppem,
               :resolution => resolution,
               :glyphDataOffset => glyphDataOffset,
-              :glyphs => glyphs
+              :glyphs => glyphs,
             })
           end
         end

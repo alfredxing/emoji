@@ -111,7 +111,7 @@ module Emoji
             Group.new({
               :startCharCode => startCharCode,
               :endCharCode => endCharCode,
-              :startGlyphCode => startGlyphCode
+              :startGlyphCode => startGlyphCode,
             })
           end
         end

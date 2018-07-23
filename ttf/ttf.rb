@@ -1,5 +1,6 @@
 require_relative 'tables/cmap'
 require_relative 'tables/maxp'
+require_relative 'tables/morx'
 require_relative 'tables/name'
 require_relative 'tables/sbix'
 
@@ -58,6 +59,8 @@ module Emoji
             @tables[tag] = Tables::CMAP.new(raw)
           when 'maxp'
             @tables[tag] = Tables::MAXP.new(raw)
+          when 'morx'
+            @tables[tag] = Tables::MORX.new(raw)
           when 'name'
             @tables[tag] = Tables::NAME.new(raw)
           when 'sbix'

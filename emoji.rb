@@ -19,22 +19,27 @@ module Emoji
       ttc = TTF::TTC.new(@contents)
       # puts ttc.fonts[0].tables.keys
 
-      font = ttc.fonts[0]
-      numGlyphs = font.tables['maxp'].numGlyphs
-      mapping = font.tables['cmap'].map(numGlyphs)
+      puts ttc.fonts[0].tables['morx'].chains[0].subtables.map { |s|
+        next if s == nil
+        s.ligatureOffset
+      }.inspect
 
-      FileUtils.mkdir_p('img/160')
-      font.tables['sbix'].strikes[8].glyphs.each.with_index do |glyph, index|
-        next if glyph == nil
+      # font = ttc.fonts[0]
+      # numGlyphs = font.tables['maxp'].numGlyphs
+      # mapping = font.tables['cmap'].map(numGlyphs)
 
-        char = mapping[index]
-        next if char == 0
+      # FileUtils.mkdir_p('img/160')
+      # font.tables['sbix'].strikes[8].glyphs.each.with_index do |glyph, index|
+      #   next if glyph == nil
 
-        hex = char.to_s(16)
-        File.open("img/160/#{hex}.png", 'wb') do |f|
-          f.write(glyph.data)
-        end
-      end
+      #   char = mapping[index]
+      #   next if char == 0
+
+      #   hex = char.to_s(16)
+      #   File.open("img/160/#{hex}.png", 'wb') do |f|
+      #     f.write(glyph.data)
+      #   end
+      # end
     end
   end
 end
