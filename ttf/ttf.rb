@@ -44,7 +44,9 @@ module Emoji
         @tables = {}
 
         @numTables.times do |n|
+          # Directory is offset by 12 bytes; each entry is 16 bytes
           start = 12 + n * 16
+
           tag = @bytes[start, 4]
           checkSum, offset, length = @bytes[start + 4, 12].unpack('NNN')
 
@@ -57,6 +59,8 @@ module Emoji
             @tables[tag] = Tables::MAXP.new(raw)
           when 'sbix'
             @tables[tag] = Tables::SBIX.new(raw, @tables['maxp'].numGlyphs)
+          else
+            @tables[tag] = nil
           end
         end
       end

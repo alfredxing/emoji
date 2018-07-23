@@ -15,7 +15,7 @@ module Emoji
 
       # Process TTC container
       ttc = TTF::TTC.new(@contents)
-      puts ttc.fonts[0].tables['sbix'].strikes[8].glyphs[2043].data
+      puts ttc.fonts[0].tables.keys
     end
   end
 end

@@ -40,12 +40,16 @@ module Emoji
           end
 
           @strikes = @strikeOffset.map do |offset|
+            # Process metadata
             ppem, resolution = @bytes[offset, 4].unpack('nn')
             glyphDataOffset = [*0...(@numGlyphs + 1)].map do |n|
               @bytes[offset + 4 + (n * 4), 4].unpack('N')[0]
             end
 
+            # Retrieve glyphs
             glyphs = [*0...@numGlyphs].map do |glyphID|
+              # Each glyph starts at the specified offset and ends
+              # at the next glyph's offset
               start = glyphDataOffset[glyphID]
               length = glyphDataOffset[glyphID + 1] - start
 
