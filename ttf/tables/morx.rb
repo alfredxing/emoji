@@ -172,7 +172,7 @@ module Emoji
         # 24        UInt32      ligatureOffset
         def extended
           @nClasses, @classTableOffset, @stateArrayOffset, @entryTableOffset = @bytes[12, 16].unpack('NNNN')
-          @ligActionOffset, @componentOffset, @ligatureOffset = @bytes[16, 12].unpack('NNN')
+          @ligActionOffset, @componentOffset, @ligatureOffset = @bytes[12 + 16, 12].unpack('NNN')
         end
       end
     end
