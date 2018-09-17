@@ -6,7 +6,7 @@ module Emoji
       #
       # Offset    Type        Name
       # 0         Fixed       version (unused)
-      # 2         UInt16      numGlyphs
+      # 4         UInt16      numGlyphs
       class MAXP
         attr_reader :numGlyphs
 
