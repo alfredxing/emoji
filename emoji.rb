@@ -22,11 +22,15 @@ module Emoji
       numGlyphs = font.tables['maxp'].numGlyphs
       reverse = font.tables['cmap'].reverse(numGlyphs)
 
+      glyphs = [0x1f469, 0x200d, 0x1f469, 0x200d, 0x1f467].map { |uni| reverse[uni] }
 
-      puts font.tables['morx'].chains[0].subtables.map { |s|
-        next if s == nil
-        s.state(1)
-      }.to_json
+      puts font.tables['morx'].chains[0].subtables
+        .map { |s|
+          next if s == nil
+          s.resolve(glyphs)
+        }
+        .find { |lig| lig }
+        .to_json
 
       # font = ttc.fonts[0]
       # numGlyphs = font.tables['maxp'].numGlyphs

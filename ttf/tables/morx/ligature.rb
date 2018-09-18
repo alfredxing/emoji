@@ -34,8 +34,10 @@ module Emoji
         end
 
         # Class lookup table
-        def class
-          return Lookup.parse(@bytes[@classTableOffset...@bytes.length])
+        # NOTE: 3 esses because class is a reserved keyword -_-
+        def classs
+          return @classs if @classs
+          return @classs = Lookup.parse(@bytes[@classTableOffset...@bytes.length])
         end
 
         # State array
@@ -103,6 +105,49 @@ module Emoji
           @ligature[i] = @bytes[start, 2].unpack('n')[0]
 
           return @ligature[i]
+        end
+
+        # Resolves a ligature, given the array of glyph IDs to process
+        def resolve(glyphs)
+          state = 1
+          i = 0
+          components = []
+
+          while i < glyphs.length
+            glyph = glyphs[i]
+            glyphClass = classs.map[glyph]
+
+            return false if !glyph || !glyphClass
+
+            entryIndex = state(state)[glyphClass]
+            glyphEntry = entry(entryIndex)
+
+            # Process flags
+            entryFlags = glyphEntry[:entryFlags]
+
+            # setComponent: push this glyph onto the component stack for eventual processing
+            if (entryFlags & 0x8000) != 0
+              components.unshift(glyph)
+            end
+
+            # performAction: use the ligActionIndex to process a ligature group
+            if (entryFlags & 0x2000) != 0
+              return components
+            end
+
+            # dontAdvance: leave the glyph pointer at this glyph for the next iteration
+            unless (entryFlags & 0x4000) != 0
+              i += 1
+            end
+
+            # Advance state
+            state = glyphEntry[:nextStateIndex]
+
+            # Guard for next state == 0 or 1
+            if state == 0 || state == 1
+              return false
+            end
+          end
         end
       end
     end
