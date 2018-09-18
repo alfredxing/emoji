@@ -27,7 +27,7 @@ module Emoji
             when 6
               SingleTable.new(raw)
             when 8
-              nil
+              TrimmedArray.new(raw)
             else
               raise NotImplemented
             end
@@ -122,7 +122,7 @@ module Emoji
         # 2         UInt16      value
         def entries
           return @entries if @entries
-          
+
           @map = {}
           @segments = [*0...@binSrchHeader.nUnits].map do |n|
             start = 12 + n * 4
@@ -132,6 +132,40 @@ module Emoji
           end
 
           @map
+        end
+      end
+
+      # Trimmed Array (Format 8) Lookup Table
+      #
+      # Offset    Type        Name
+      # 0         UInt16      format
+      # 2         UInt16      firstGlyph
+      # 4         UInt16      glyphCount
+      # 8         UInt16[]    valueArray
+      class Lookup::TrimmedArray < Lookup
+        attr_reader :map
+
+        def initialize(raw)
+          super(raw)
+
+          header()
+          values()
+        end
+
+        def header
+          @firstGlyph, @glyphCount = @bytes[2, 4].unpack('nn')
+        end
+
+        def values
+          @map = {}
+
+          [*0...@glyphCount].map do |n|
+            start = 8 + n * 2
+            glyph = @firstGlyph + n
+            value = @bytes[start, 2].unpack('n')[0]
+
+            @map[glyph] = value
+          end
         end
       end
 
