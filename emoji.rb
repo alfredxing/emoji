@@ -21,7 +21,7 @@ module Emoji
 
       puts ttc.fonts[0].tables['morx'].chains[0].subtables.map { |s|
         next if s == nil
-        s.ligatureOffset
+        s.class && s.class.binSrchHeader.nUnits
       }.inspect
 
       # font = ttc.fonts[0]
@@ -37,6 +37,16 @@ module Emoji
 
       #   hex = char.to_s(16)
       #   File.open("img/160/#{hex}.png", 'wb') do |f|
+      #     f.write(glyph.data)
+      #   end
+      # end
+
+      # font = ttc.fonts[0]
+      # FileUtils.mkdir_p('img/160')
+      # font.tables['sbix'].strikes[8].glyphs.each.with_index do |glyph, index|
+      #   next if glyph == nil
+
+      #   File.open("img/160/#{index}.png", 'wb') do |f|
       #     f.write(glyph.data)
       #   end
       # end

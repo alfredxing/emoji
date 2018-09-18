@@ -174,6 +174,10 @@ module Emoji
           @nClasses, @classTableOffset, @stateArrayOffset, @entryTableOffset = @bytes[12, 16].unpack('NNNN')
           @ligActionOffset, @componentOffset, @ligatureOffset = @bytes[12 + 16, 12].unpack('NNN')
         end
+
+        def class
+          return Lookup.parse(@bytes[12 + @classTableOffset..@bytes.length])
+        end
       end
     end
   end

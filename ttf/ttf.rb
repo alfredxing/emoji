@@ -4,6 +4,8 @@ require_relative 'tables/morx'
 require_relative 'tables/name'
 require_relative 'tables/sbix'
 
+require_relative 'tables/lookup'
+
 module Emoji
   module TTF
     # Processes the TTF (TrueType) font format.
