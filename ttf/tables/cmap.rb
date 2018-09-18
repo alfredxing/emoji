@@ -62,6 +62,18 @@ module Emoji
 
           return mapping
         end
+
+        # Given numGlyphs, return a mapping from unicode charCode to glyph ID
+        def reverse(numGlyphs)
+          mapping = map(numGlyphs)
+          reverse = {}
+
+          mapping.each_with_index do |uni, glyph|
+            reverse[uni] = glyph
+          end
+
+          return reverse
+        end
       end
 
       # Processes format 12 (segemented coverage) subtables

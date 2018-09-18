@@ -112,7 +112,7 @@ module Emoji
                 :coverage => coverage,
                 :subFeatureFlags => subFeatureFlags,
                 :type => type,
-                :bytes => @bytes[start, length],
+                :bytes => @bytes[start + 12, length - 12],
               })
             else
               subtable = nil
@@ -146,37 +146,6 @@ module Emoji
           @subFeatureFlags = subFeatureFlags
           @type = type
           @bytes = bytes
-        end
-      end
-
-      # A `morx` ligature subtable
-      class MORX::Chain::Subtable::Ligature < MORX::Chain::Subtable
-        attr_reader :ligatureOffset
-
-        def initialize(**args)
-          super(**args)
-
-          extended()
-        end
-
-        # Extended state table header and ligature table offsets
-        # (Offset 12 bytes from the start of the subtable)
-        #
-        # Offset    Type        Name
-        # 0         UInt32      nClasses
-        # 4         UInt32      classTableOffset
-        # 8         UInt32      stateArrayOffset
-        # 12        UInt32      entryTableOffset
-        # 16        UInt32      ligActionOffset
-        # 20        UInt32      componentOffset
-        # 24        UInt32      ligatureOffset
-        def extended
-          @nClasses, @classTableOffset, @stateArrayOffset, @entryTableOffset = @bytes[12, 16].unpack('NNNN')
-          @ligActionOffset, @componentOffset, @ligatureOffset = @bytes[12 + 16, 12].unpack('NNN')
-        end
-
-        def class
-          return Lookup.parse(@bytes[12 + @classTableOffset..@bytes.length])
         end
       end
     end

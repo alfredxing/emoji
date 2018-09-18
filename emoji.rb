@@ -1,5 +1,5 @@
 require 'fileutils'
-require 'pp'
+require 'json'
 
 require_relative 'ttf/ttf'
 require_relative 'ttf/ttc'
@@ -18,12 +18,15 @@ module Emoji
 
       # Process TTC container
       ttc = TTF::TTC.new(@contents)
-      # puts ttc.fonts[0].tables.keys
+      font = ttc.fonts[0]
+      numGlyphs = font.tables['maxp'].numGlyphs
+      reverse = font.tables['cmap'].reverse(numGlyphs)
 
-      puts ttc.fonts[0].tables['morx'].chains[0].subtables.map { |s|
+
+      puts font.tables['morx'].chains[0].subtables.map { |s|
         next if s == nil
-        s.class && s.class.map
-      }.pretty_inspect
+        s.state(1)
+      }.to_json
 
       # font = ttc.fonts[0]
       # numGlyphs = font.tables['maxp'].numGlyphs
