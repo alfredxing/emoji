@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'pp'
 
 require_relative 'ttf/ttf'
 require_relative 'ttf/ttc'
@@ -21,8 +22,8 @@ module Emoji
 
       puts ttc.fonts[0].tables['morx'].chains[0].subtables.map { |s|
         next if s == nil
-        s.class && s.class.binSrchHeader.nUnits
-      }.inspect
+        s.class && s.class.map
+      }.pretty_inspect
 
       # font = ttc.fonts[0]
       # numGlyphs = font.tables['maxp'].numGlyphs

@@ -25,7 +25,7 @@ module Emoji
             when 4
               SegmentArray.new(raw)
             when 6
-              nil
+              SingleTable.new(raw)
             when 8
               nil
             else
@@ -42,7 +42,7 @@ module Emoji
       # 2         BinarySearchHeader   binSrchHeader
       # 12        LookupSegment[]      segments
       class Lookup::SegmentArray < Lookup
-        attr_reader :binSrchHeader
+        attr_reader :binSrchHeader, :map
 
         def initialize(raw)
           super(raw)
@@ -92,6 +92,46 @@ module Emoji
 
         def initialize(lastGlyph:, firstGlyph:, values:)
           @lastGlyph, @firstGlyph, @values = [lastGlyph, firstGlyph, values]
+        end
+      end
+
+      # Single Table (Format 6) Lookup Table
+      #
+      # Offset    Type                 Name
+      # 0         UInt16               format
+      # 2         BinarySearchHeader   binSrchHeader
+      # 12        LookupSingle[]       entries
+      class Lookup::SingleTable < Lookup
+        attr_reader :binSrchHeader, :map
+
+        def initialize(raw)
+          super(raw)
+
+          fs_header()
+          entries()
+        end
+
+        def fs_header
+          @binSrchHeader = BinarySearchHeader.new(@bytes[2, 10])
+        end
+
+        # Process entries
+        #
+        # Offset    Type        Name
+        # 0         UInt16      glyph
+        # 2         UInt16      value
+        def entries
+          return @entries if @entries
+          
+          @map = {}
+          @segments = [*0...@binSrchHeader.nUnits].map do |n|
+            start = 12 + n * 4
+            glyph, value = @bytes[start, 4].unpack('nn')
+
+            @map[glyph] = value
+          end
+
+          @map
         end
       end
 
