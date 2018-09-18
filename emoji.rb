@@ -22,42 +22,22 @@ module Emoji
       numGlyphs = font.tables['maxp'].numGlyphs
       reverse = font.tables['cmap'].reverse(numGlyphs)
 
-      glyphs = [0x1f469, 0x200d, 0x1f469, 0x200d, 0x1f467].map { |uni| reverse[uni] }
+      input = '1F469'
+      cps = input.split('-').map { |hex| hex.to_i(16) }
+      glyphs = cps.map { |uni| reverse[uni] }
 
-      puts font.tables['morx'].chains[0].subtables
+      lig = font.tables['morx'].chains[0].subtables
         .map { |s|
           next if s == nil
           s.resolve(glyphs)
         }
         .find { |lig| lig }
-        .to_json
 
-      # font = ttc.fonts[0]
-      # numGlyphs = font.tables['maxp'].numGlyphs
-      # mapping = font.tables['cmap'].map(numGlyphs)
-
-      # FileUtils.mkdir_p('img/160')
-      # font.tables['sbix'].strikes[8].glyphs.each.with_index do |glyph, index|
-      #   next if glyph == nil
-
-      #   char = mapping[index]
-      #   next if char == 0
-
-      #   hex = char.to_s(16)
-      #   File.open("img/160/#{hex}.png", 'wb') do |f|
-      #     f.write(glyph.data)
-      #   end
-      # end
-
-      # font = ttc.fonts[0]
-      # FileUtils.mkdir_p('img/160')
-      # font.tables['sbix'].strikes[8].glyphs.each.with_index do |glyph, index|
-      #   next if glyph == nil
-
-      #   File.open("img/160/#{index}.png", 'wb') do |f|
-      #     f.write(glyph.data)
-      #   end
-      # end
+      FileUtils.mkdir_p('img/lig')
+      File.open("img/lig/#{input}.png", 'wb') do |f|
+        glyph = font.tables['sbix'].strikes[8].glyphs[lig]
+        f.write(glyph.data)
+      end
     end
   end
 end
