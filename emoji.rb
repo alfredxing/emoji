@@ -16,6 +16,9 @@ module Emoji
     def run
       file = read()
       data = parse_data()
+      FileUtils.mkdir_p('img/160')
+
+      puts "Parsed data: #{data.length} emoji"
 
       # Process TTC container
       ttc = TTF::TTC.new(file)
@@ -38,14 +41,15 @@ module Emoji
           lig = glyphs[0]
         end
 
-        FileUtils.mkdir_p('img/160')
-        File.open("img/160/#{input}.png", 'wb') do |f|
-          begin
-            glyph = font.tables['sbix'].strikes[8].glyphs[lig]
+        begin
+          glyph = font.tables['sbix'].strikes[8].glyphs[lig]
+          raise StandardError, 'Glyph data empty' if glyph.data.length == 0
+
+          File.open("img/160/#{input}.png", 'wb') do |f|
             f.write(glyph.data)
-          rescue
-            puts "Can't find image for combination #{input}"
           end
+        rescue
+          puts "Can't find image for combination #{input} with error #{$!}"
         end
       end
     end

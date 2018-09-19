@@ -141,7 +141,7 @@ module Emoji
       # 0         UInt16      format
       # 2         UInt16      firstGlyph
       # 4         UInt16      glyphCount
-      # 8         UInt16[]    valueArray
+      # 6         UInt16[]    valueArray
       class Lookup::TrimmedArray < Lookup
         attr_reader :map
 
@@ -160,7 +160,7 @@ module Emoji
           @map = {}
 
           [*0...@glyphCount].map do |n|
-            start = 8 + n * 2
+            start = 6 + n * 2
             glyph = @firstGlyph + n
             value = @bytes[start, 2].unpack('n')[0]
 
