@@ -42,6 +42,16 @@ module Emoji
         end
 
         begin
+          # I hate special cases, but for some reason the font doesn't have
+          # single fully-qualified codepoints made up of the non-fully-qualified
+          # one followed by FE0F (variation selector), so if we detect this
+          # is the case, just use the non-fully-qualified code point.
+          #
+          # TODO: figure out if the font actually handles this and how?
+          if !lig && cps.length == 2 && cps[1] == 0xFE0F
+            lig = glyphs[0]
+          end
+
           glyph = font.tables['sbix'].strikes[8].glyphs[lig]
           raise StandardError, 'Glyph data empty' if glyph.data.length == 0
 
