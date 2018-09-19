@@ -16,7 +16,6 @@ module Emoji
     def run
       file = read()
       data = parse_data()
-      FileUtils.mkdir_p('img/160')
 
       puts "Parsed data: #{data.length} emoji"
 
@@ -52,11 +51,15 @@ module Emoji
             lig = glyphs[0]
           end
 
-          glyph = font.tables['sbix'].strikes[8].glyphs[lig]
-          raise StandardError, 'Glyph data empty' if glyph.data.length == 0
+          font.tables['sbix'].strikes.each do |strike|
+            size = strike.ppem
+            glyph = strike.glyphs[lig]
+            raise StandardError, 'Glyph data empty' if glyph.data.length == 0
 
-          File.open("img/160/#{input}.png", 'wb') do |f|
-            f.write(glyph.data)
+            FileUtils.mkdir_p("img/#{size}")
+            File.open("img/#{size}/#{input}.png", 'wb') do |f|
+              f.write(glyph.data)
+            end
           end
         rescue
           puts "Can't find image for combination #{input} with error #{$!}"
