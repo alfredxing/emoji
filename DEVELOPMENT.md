@@ -35,6 +35,37 @@ Each font begins with the offset subtable, which specifies some metadata such as
 
 ### Common Ruby patterns
 
+#### File contents and reading
+
+The font file is read into a string in binary mode; no encoding is specified. The contents are usually referred to with the names `raw` or `bytes` in the code. To read a certain chunk (substring) of the bytes, a couple of array-like indexing patterns are used:
+
+- `bytes[start, length]` &mdash; reads `length` bytes beginning at `start`
+- `bytes[start...end]` &mdash; reads from `start` to `end - 1`
+
+#### Decoding binary bytes
+
+Read bytes can be compared directly to ASCII strings, but to decode bytes into integers, we need to use the [`String#unpack`](https://ruby-doc.org/core-2.5.1/String.html#method-i-unpack) method (see the linked docs for the reference of format specifiers):
+
+- `bytes[start, 4].unpack('nn')` &mdash; reads 4 bytes as 2 big-endian UInt16's (`unpack` returns an array)
+- `bytes[start, 4].unpack('N')` &mdash; reads 4 bytes as a big-endian UInt32 (returns an array with 1 item)
+
+Array destructuring is used to assign the items of the array output by `unpack` into variables:
+
+```ruby
+# Offset    Type        Name
+# 0         UInt16      version
+# 2         UInt16      reserved
+# 4         UInt32      nChains
+@version, @reserved, @nChains = @bytes[0, 8].unpack('nnN')
+```
+
+#### Ranges and iteration
+
+[Ruby ranges](https://ruby-doc.org/core-2.5.1/Range.html) are used extensively to iterate over a sequence of numbers or indices.
+
+- `(start..end).each` iterates from `start` to `end` inclusively
+- `(start...end).each` iterates from `start` to `end - 1`
+
 ### TrueType tables
 
 #### `maxp`
