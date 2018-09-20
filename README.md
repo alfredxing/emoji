@@ -31,7 +31,7 @@ For example, the `👨‍👩‍👧‍👧 family: man, woman, girl, girl` emoj
 `img/64/1F468-200D-1F468-200D-1F467-200D-1F467.png`.
 
 #### Technical documentation
-Documentation on how the code works can be found in [`DEVELOPMENT.md`]().
+Documentation on how the code works can be found in [`DEVELOPMENT.md`](DEVELOPMENT.md).
 
 #### References
 - Apple TrueType Reference Manual: https://developer.apple.com/fonts/TrueType-Reference-Manual/
