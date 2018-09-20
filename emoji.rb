@@ -68,8 +68,11 @@ module Emoji
     end
 
     def parse_data
-      raw = File.open('data/emoji-test.txt', 'r').read
-      return raw.lines
+      spec = File.open('data/emoji-test.txt', 'r').read
+      additional = File.open('data/additional.txt', 'r').read
+      combined = [spec, additional].join("\n")
+
+      return combined.lines
         .map do |row|
           match = row.match(/^[0-9a-f]+(\s[0-9a-f]+)*/i)
 
