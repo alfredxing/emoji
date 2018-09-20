@@ -33,7 +33,7 @@ module Emoji
             return @tables
           end
 
-          @tables = [*0...@numTables].map do |n|
+          @tables = (0...@numTables).map do |n|
             start = 4 + n * 8
             platformID, platformSpecificID, offset = @bytes[start, 8].unpack('nnN')
 
@@ -52,11 +52,11 @@ module Emoji
 
         # Given numGlyphs, fill in an index of glyph ID to (unicode) charCode
         def map(numGlyphs)
-          mapping = [*0...numGlyphs].map { 0 }
+          mapping = (0...numGlyphs).map { 0 }
 
           @tables.each do |table|
             table.groups.each do |group|
-              mapping[group.startGlyphCode, group.length] = [*group.startCharCode..group.endCharCode]
+              mapping[group.startGlyphCode, group.length] = (group.startCharCode..group.endCharCode).to_a
             end
           end
 
@@ -116,7 +116,7 @@ module Emoji
             return @groups
           end
 
-          @groups = [*0...@numGroups].map do |n|
+          @groups = (0...@numGroups).map do |n|
             start = 16 + n * 12
             startCharCode, endCharCode, startGlyphCode = @bytes[start, 12].unpack('NNN')
 

@@ -65,7 +65,7 @@ module Emoji
           return @segments if @segments
 
           @map = {}
-          @segments = [*0...@binSrchHeader.nUnits].map do |n|
+          @segments = (0...@binSrchHeader.nUnits).map do |n|
             start = 12 + n * 6
             lastGlyph, firstGlyph, value = @bytes[start, 6].unpack('nnn')
 
@@ -73,7 +73,7 @@ module Emoji
             # size used by the `morx` class table
             values = @bytes[value, (lastGlyph - firstGlyph + 1) * 2].unpack('n*')
 
-            [*firstGlyph..lastGlyph].each_with_index do |glyph, i|
+            (firstGlyph..lastGlyph).each_with_index do |glyph, i|
               @map[glyph] = values[i] unless values[i] == 0
             end
 
@@ -124,7 +124,7 @@ module Emoji
           return @entries if @entries
 
           @map = {}
-          @segments = [*0...@binSrchHeader.nUnits].map do |n|
+          @segments = (0...@binSrchHeader.nUnits).map do |n|
             start = 12 + n * 4
             glyph, value = @bytes[start, 4].unpack('nn')
 
@@ -159,7 +159,7 @@ module Emoji
         def values
           @map = {}
 
-          [*0...@glyphCount].map do |n|
+          (0...@glyphCount).map do |n|
             start = 6 + n * 2
             glyph = @firstGlyph + n
             value = @bytes[start, 2].unpack('n')[0]

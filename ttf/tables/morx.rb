@@ -30,7 +30,7 @@ module Emoji
           end
 
           start = 8
-          @chains = [*0...@nChains].map do |n|
+          @chains = (0...@nChains).map do |n|
             chain = Chain.new(@bytes[start...@bytes.length])
             start += chain.chainLength
 
@@ -75,7 +75,7 @@ module Emoji
             return @features
           end
 
-          @features = [*0...@nFeatureEntries].map do |i|
+          @features = (0...@nFeatureEntries).map do |i|
             start = 16 + i * 12
             featureType, featureSetting, enableFlags, disableFlags = @bytes[start, 8].unpack('nnnn')
 
@@ -101,7 +101,7 @@ module Emoji
           end
 
           start = 16 + @nFeatureEntries * 12
-          @subtables = [*0...@nSubtables].map do |i|
+          @subtables = (0...@nSubtables).map do |i|
             length, coverage, subFeatureFlags = @bytes[start, 12].unpack('NNN')
             type = coverage & 0x000000FF
 
