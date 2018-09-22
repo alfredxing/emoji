@@ -23,3 +23,65 @@ Consider the Canadian flag emoji 🇨🇦. It's constructed from a sequence of 2
 The state machine begins at a `START` state, then transitions to a new `SEEN-C` state when it sees `C`, and from there, resolves the ligature if it sees `A` as the next glyph.
 
 <img src="https://user-images.githubusercontent.com/2704010/45908067-7e424980-bdaf-11e8-96bd-77fc07477d0b.png" width="400">
+
+#### Classes
+
+Because there are a large number of possible sequences of emoji forming ligatures, it's inefficient to have unique transitions per glyph; instead, similar sets of glyphs are grouped into "classes" before being processed again. In the state machine representation in the font, all transitions are done through these classes (even if they sometimes only contain a single glyph).
+
+### Representation in the font (the `morx` table) [[reference]](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6morx.html)
+
+The `morx` table is split up into chains (in the current Apple Emoji font, there is only 1 chain to process), which is then split into the feature subtables (unused here) and actual subtables; of those, we are interested in the ligature subtables (type 2).
+
+Each ligature subtable stores the representation of a state machine, which comprises the following tables (whose offsets are given by the subtable header):
+
+- **Class table**: maps glyph IDs to classes
+- **State array**: maps a given state and class to the index of the corresponding item in the entry table
+- **Entry table**: contains information about the next state to transition to, and any actions that need to be taken
+- **Ligature action table**: information on what action to take if specified by the entry table
+- **Component table**: contains values that are accumulated and added up as the ligature is processed; the added result is then used as an index into the ligature table
+- **Ligature table**: maps component results to the glyph ID of the final ligature
+
+#### Class lookup tables [[reference]](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6Tables.html#LookupTables)
+
+Class lookup tables map glyph IDs to the classes used to determine which transition to take. There are a few formats of lookup tables, 3 of which are used in the Apple Emoji font:
+
+- **Segment Array (Format 4)**: an array of segments covering `[startGlyph, endGlyph]` and mapping them to their respective classes in an array
+- **Single Table (Format 6)**: an array of classes indexed directly by glyph ID
+- **Trimmed Array (Format 8)**: similar to the single table, but the first item in the array maps from `firstGlyph` instead of 0
+
+#### State array
+
+The state array is a 2D array with the state ID as the row index, and the class as the column index. For example, if we are currently at state 5 and the next glyph has class 11, the value we would read is `stateArray[5][11]`. The 2D array is stored in row-major order. The value read is the index into the entry table.
+
+#### Entry table
+
+The entry table is an array of state entries, containing the next state to transition to as well as flags to determine whether additional actions need to be taken:
+
+- `setComponent` (`0x8000`) &mdash; Push the current glyph onto a stack (the "component stack") for processing later on
+- `dontAdvance` (`0x4000`) &mdash; Go to the next state, but not the next glyph
+- `performAction` (`0x2000`) &mdash; Process the stored component stack into a ligature using the instructions in the ligature action table _starting_ at index `ligActionIndex`
+
+#### Ligature action table
+
+The ligature action contains instructions for processing a component stack (list of glyph IDs).
+
+> ⚠️ *Note*: The index into the action table is the _starting_ index of the instructions. If the component stack has 5 glyphs, the instructions are the 5 actions starting from the given index.
+
+Each action contains couple of flags in addition to an `offset` field which is used to pre-process the glyph ID. The algorithm to run through the actions is:
+
+1. Initialize the component accumulator to 0
+2. Iterate through the component stack. For each glyph ID, and its corresponding action:
+    1. Compute the offset (`action & 0x3FFFFFFF`, then sign extend to 32 bits)
+    2. Add the offset to the glyph ID
+    3. Use the result to the index into the component table to get the component value
+    4. Add the component value to the component accumulator
+    5. If the action has either the `last` or `store` flags, break the loop
+3. Use the value of the component accumulator to index into the ligature table to get the final glyph ID
+
+#### Component table
+
+The component table is a simple array mapping the offseted glyph ID to component value.
+
+#### Ligature table
+
+The ligature table is an array that maps component accumulator sums to ligature glyph IDs.
