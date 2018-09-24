@@ -86,7 +86,7 @@ The component table is a simple array mapping the offseted glyph ID to component
 
 The ligature table is an array that maps component accumulator sums to ligature glyph IDs.
 
-### A simple example with real tables
+### A simple example with tables
 
 Let's use 🤷🏽 (`person shrugging: medium skin tone`) as an example, which is made up of code points `U+1F937 U+1F3FD`, and assume the `cmap` table tells us these are glyph IDs `2174` and `879`, respectively. We'll lay out the tables, then run through the algorithm.
 
