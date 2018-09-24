@@ -86,11 +86,11 @@ The component table is a simple array mapping the offseted glyph ID to component
 
 The ligature table is an array that maps component accumulator sums to ligature glyph IDs.
 
-## A simple example with real tables
+### A simple example with real tables
 
 Let's use 🤷🏽 (`person shrugging: medium skin tone`) as an example, which is made up of code points `U+1F937 U+1F3FD`, and assume the `cmap` table tells us these are glyph IDs `2174` and `879`, respectively. We'll lay out the tables, then run through the algorithm.
 
-#### Class lookup table:
+#### Class lookup table
 | Name | Value | Description |
 |---|---|---|
 | `format` | `4` | Format 4 (segment array) lookup table |
@@ -108,9 +108,63 @@ Let's use 🤷🏽 (`person shrugging: medium skin tone`) as an example, which i
 | `segments[0].values` | `[3, 3, ..., 3]` | All glyphs from 1881 to 2174 have class 3 |
 | `segments[1].values` | `[5, 5, 5, 5]` | All skin tone modifiers have class 5 |
 
-#### State array:
+#### State array
 | | Class 0 | Class 1 | Class 2 | Class 3 | Class 4 | Class 5 |
 |---|---|---|---|---|---|---|
 | **State 0** | 0 | 6 | 5 | 0 | 0 | 0 |
 | **State 1** | 0 | 4 | 0 | 1 | 4 | 0 |
 | **State 2** | 13 | 12 | 0 | 0 | 3 | 2 |
+
+#### Entry table
+| Name | Value | Description |
+|---|---|---|
+| `entry[0].nextStateIndex` | `0` | Entry 0: goto state 0 |
+| `entry[0].entryFlags` | `0` | Entry 0: no flags |
+| `entry[0].ligActionIndex` | `0` | Entry 0: no action |
+| `entry[1].nextStateIndex` | `2` | Entry 1: goto state 2 |
+| `entry[1].entryFlags` | `0x8000` | Entry 1: flag to set a component |
+| `entry[1].ligActionIndex` | `0` | Entry 1: no action |
+| `entry[2].nextStateIndex` | `0` | Entry 2: goto state 0 |
+| `entry[2].entryFlags` | `0xA000` | Entry 2: flag to set a component and also run action |
+| `entry[2].ligActionIndex` | `0` | Entry 2: start action at index 0 of the action table |
+
+#### Ligature action table
+| Name | Value |
+|---|---|
+| `action[0]` | `0x3FFFFC93` |
+| `action[1]` | `0xBFFFF786` |
+
+#### Component table
+| Name | Value |
+|---|---|
+| `component[0]` | `0` |
+| `component[1]` | `1` |
+| `component[2]` | `2` |
+| `component[3]` | `5` |
+| `component[4]` | `6` |
+
+#### Ligature table
+| Name | Value |
+|---|---|
+| `ligature[0]` | `153` |
+| `ligature[1]` | `154` |
+| `ligature[2]` | `155` |
+| `ligature[3]` | `156` |
+| `ligature[4]` | `1883` |
+| `ligature[5]` | `1884` |
+| `ligature[6]` | `1885` |
+| `ligature[7]` | `1886` |
+| `ligature[8]` | `1887` |
+
+#### Run-through
+
+We start with glyph IDs `[2174, 879]`. First, we'll need to find out which classes they belong to.
+Looking at the class lookup table, we see that glyph `2174` falls within the range of segment 0, and has class 3. Similarly, glyph `879` is contained within segment 1, and has class 5.
+
+The starting state index is 1, and our first glyph is class 3, so we find that cell in the 2D state array above, which has a value of 1. This tells us to look at entry 1 in the entry table, which as a `nextStateIndex` of 2, and a flag of `0x8000` tells us to set a component. Our component stack is now `[2174]` and we're on state index 2.
+
+Indexing into the state array again with index 2 and class 5, we find a value of 2. The state entry with index 2 has a `nextStateIndex` of 0 and flags `0xA000`. Since `0xA000` includes flag `0x8000`, we need to push this component to the stack as well, which is now `[879, 2174]`. `0xA000` also includes flag `0x2000`, which means we need to perform the action specified by `ligActionIndex`, which in this case is index `0`.
+
+The action at index `0` is `0x3FFFFC93`. Sign extending this to 32 bits, we get `-877`, and adding this to the first glyph in our stack results in `2`. Looking at the component table, index 2 is `2`, which we set as our component accumulator. The action doesn't have the `last` or `store` flag, so we move on to the next action.
+
+`action[1]` is `0xBFFFF786`. Sign extending the masked portion `0xBFFFF786 & 0x3FFFFFFF` gives `-2170`, which we add to our next glyph in the stack to get `4`. `component[4]` is `6`, and we add this to the accumulator, which gives the new value of `8`. This action has the `last` flag, so we can look up the accumulator value in the ligature table. `ligature[8]` is `1887`, and this is our resolved ligature glyph value.
