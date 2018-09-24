@@ -1,6 +1,6 @@
 require_relative 'tables/cmap'
 require_relative 'tables/maxp'
-require_relative 'tables/morx'
+require_relative 'tables/morx/morx'
 require_relative 'tables/morx/ligature'
 require_relative 'tables/name'
 require_relative 'tables/sbix'
