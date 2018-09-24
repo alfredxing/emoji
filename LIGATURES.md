@@ -88,19 +88,29 @@ The ligature table is an array that maps component accumulator sums to ligature 
 
 ## A simple example with real tables
 
-Let's stick with the 🇨🇦 example, which is made up of code points `U+1F1E8 U+1F1E6`, and assume the `cmap` table tells us these are glyph IDs `53` and `51`, respectively. We'll lay out the tables, then run through the algorithm.
+Let's use 🤷🏽 (`person shrugging: medium skin tone`) as an example, which is made up of code points `U+1F937 U+1F3FD`, and assume the `cmap` table tells us these are glyph IDs `2174` and `879`, respectively. We'll lay out the tables, then run through the algorithm.
 
 #### Class lookup table:
 | Name | Value | Description |
 |---|---|---|
-| `format` | `8` | Format 8 (trimmed array) lookup table |
-| `firstGlyph` | `51` | First glyph is the Regional Indicator A glyph |
-| `glyphCount` | `3` | |
-| `valueArray` | `[4, 4, 4]` | All 3 glyphs are class `4` |
+| `format` | `4` | Format 4 (segment array) lookup table |
+| `binSrchHeader.unitSize` | `6` | _Not used_ (used for binary searching the class table) |
+| `binSrchHeader.nUnits` | `2` | The number of segments that follow |
+| `binSrchHeader.searchRange` | `12` | _Not used_ |
+| `binSrchHeader.entrySelector` | `1` | _Not used_ |
+| `binSrchHeader.rangeShift` | `0` | _Not used_ |
+| `segments[0].lastGlyph` | `2174` | Last glyph of segment 0 is the Person Shrugging glyph |
+| `segments[0].firstGlyph` | `1881` | First glyph of segment 0 is the Person Frowning glyph |
+| `segments[0].value` | `24` | Start of the values array for segment 0 is at offset 14 |
+| `segments[1].lastGlyph` | `881` | Last glyph of segment 0 is the dark skin tone modifier |
+| `segments[1].firstGlyph` | `877` | First glyph of segment 0 is the light skin tone modifier |
+| `segments[1].value` | `610` | Start of the values array for segment 1 is at offset 600 |
+| `segments[0].values` | `[3, 3, ..., 3]` | All glyphs from 1881 to 2174 have class 3 |
+| `segments[1].values` | `[5, 5, 5, 5]` | All skin tone modifiers have class 5 |
 
 #### State array:
 | | Class 0 | Class 1 | Class 2 | Class 3 | Class 4 | Class 5 |
 |---|---|---|---|---|---|---|
-| **State 0** | 0 | 1 | 5 | 0 | 0 | 0 |
-| **State 1** | 0 | 4 | 0 | 0 | 2 | 0 |
-| **State 2** | 13 | 12 | 0 | 0 | 3 | 0 |
+| **State 0** | 0 | 6 | 5 | 0 | 0 | 0 |
+| **State 1** | 0 | 4 | 0 | 1 | 4 | 0 |
+| **State 2** | 13 | 12 | 0 | 0 | 3 | 2 |
