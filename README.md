@@ -36,4 +36,6 @@ Documentation on how the code works can be found in [`DEVELOPMENT.md`](DEVELOPME
 ### References
 - Apple TrueType Reference Manual: https://developer.apple.com/fonts/TrueType-Reference-Manual/
 - Cal's `emoji-data` project: https://github.com/iamcal/emoji-data
+- The Unicode Emoji spec (currently supported version is Emoji 5.0): https://www.unicode.org/reports/tr51/tr51-12.html
+  - This spec includes the source for the `data/emoji-test.txt` file: https://unicode.org/Public/emoji/5.0/emoji-test.txt
 - The `Font::TTF` Perl module (in particular the [`AATUtils.pm`](https://metacpan.org/source/BHALLISSY/Font-TTF-1.06/lib/Font/TTF/AATutils.pm) file): https://metacpan.org/pod/Font::TTF
