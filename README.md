@@ -17,7 +17,7 @@ also allows additional codepoints to be specified in `data/additional.txt` for a
 git clone https://github.com/alfredxing/emoji.git
 
 # Copy the Apple emoji file to the repo directory
-cd emoji && cp '/System/Library/Fonts/Apple Color Emoji.ttc' .
+cd emoji && cat "/System/Library/Fonts/Apple Color Emoji.ttc" > "Apple Color Emoji.ttc"
 
 # Run the script
 ruby emoji.rb
