@@ -77,11 +77,11 @@ module Emoji
               @map[glyph] = values[i] unless values[i] == 0
             end
 
-            Segment.new({
-              :lastGlyph => lastGlyph,
-              :firstGlyph => firstGlyph,
-              :values => values,
-            })
+            Segment.new(
+              lastGlyph: lastGlyph,
+              firstGlyph: firstGlyph,
+              values: values,
+            )
           end
         end
       end

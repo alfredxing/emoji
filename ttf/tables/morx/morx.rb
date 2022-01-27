@@ -79,12 +79,12 @@ module Emoji
             start = 16 + i * 12
             featureType, featureSetting, enableFlags, disableFlags = @bytes[start, 8].unpack('nnnn')
 
-            Feature.new({
-              :featureType => featureType,
-              :featureSetting => featureSetting,
-              :enableFlags => enableFlags,
-              :disableFlags => disableFlags,
-            })
+            Feature.new(
+              featureType: featureType,
+              featureSetting: featureSetting,
+              enableFlags: enableFlags,
+              disableFlags: disableFlags,
+            )
           end
         end
 
@@ -107,13 +107,13 @@ module Emoji
 
             case type
             when 2
-              subtable = Subtable::Ligature.new({
-                :length => length,
-                :coverage => coverage,
-                :subFeatureFlags => subFeatureFlags,
-                :type => type,
-                :bytes => @bytes[start + 12, length - 12],
-              })
+              subtable = Subtable::Ligature.new(
+                length: length,
+                coverage: coverage,
+                subFeatureFlags: subFeatureFlags,
+                type: type,
+                bytes: @bytes[start + 12, length - 12],
+              )
             else
               subtable = nil
             end

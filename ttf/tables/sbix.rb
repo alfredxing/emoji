@@ -60,12 +60,12 @@ module Emoji
               end
             end
 
-            Strike.new({
-              :ppem => ppem,
-              :resolution => resolution,
-              :glyphDataOffset => glyphDataOffset,
-              :glyphs => glyphs,
-            })
+            Strike.new(
+              ppem: ppem,
+              resolution: resolution,
+              glyphDataOffset: glyphDataOffset,
+              glyphs: glyphs,
+            )
           end
         end
       end

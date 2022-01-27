@@ -120,11 +120,11 @@ module Emoji
             start = 16 + n * 12
             startCharCode, endCharCode, startGlyphCode = @bytes[start, 12].unpack('NNN')
 
-            Group.new({
-              :startCharCode => startCharCode,
-              :endCharCode => endCharCode,
-              :startGlyphCode => startGlyphCode,
-            })
+            Group.new(
+              startCharCode: startCharCode,
+              endCharCode: endCharCode,
+              startGlyphCode: startGlyphCode,
+            )
           end
         end
       end
