@@ -7,7 +7,7 @@ also allows additional codepoints to be specified in `data/additional.txt` for a
 (e.g. standalone skin tones).
 
 ### Requirements & Dependencies
-- macOS (latest version recommended; tested with 12.0.1)
+- macOS (latest version recommended; tested with 13.3.1)
 - Ruby (latest version recommended; tested with 3.0.3p157)
 - At least 500MB of free disk space 😛
 
